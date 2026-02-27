@@ -1,0 +1,58 @@
+  name: Build and Release
+
+# Triggers the action whenever a tag starting with "v" is sent (e.g., v1.0.0).
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Give permission to the GitHub bot to create the Release.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build for ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact_name: xMKVExtractGUI-win-x64.zip
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact_name: xMKVExtractGUI-linux-x64.tar.gz
+          - os: macos-latest
+            rid: osx-x64
+            artifact_name: xMKVExtractGUI-macos-x64.tar.gz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Compile the project using the parameters you already know.
+      - name: Publish App
+        run: dotnet publish xMKVExtractGUI.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish_output
+
+      # Packaged in Windows
+      - name: Zip output (Windows)
+        if: matrix.os == 'windows-latest'
+        run: Compress-Archive -Path ./publish_output/* -DestinationPath ./${{ matrix.artifact_name }}
+
+      # Packaged for Linux and macOS.
+      - name: Tar output (Unix)
+        if: matrix.os != 'windows-latest'
+        run: tar -czvf ./${{ matrix.artifact_name }} -C ./publish_output .
+
+      # Create the Release and upload the files.
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./${{ matrix.artifact_name }}
+          generate_release_notes: true
