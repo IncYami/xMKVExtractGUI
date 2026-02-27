@@ -1,12 +1,10 @@
-  name: Build and Release
+name: Build and Release
 
-# Triggers the action whenever a tag starting with "v" is sent (e.g., v1.0.0).
 on:
   push:
     tags:
       - 'v*'
 
-# Give permission to the GitHub bot to create the Release.
 permissions:
   contents: write
 
@@ -36,21 +34,17 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # Compile the project using the parameters you already know.
       - name: Publish App
         run: dotnet publish xMKVExtractGUI.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish_output
 
-      # Packaged in Windows
       - name: Zip output (Windows)
         if: matrix.os == 'windows-latest'
         run: Compress-Archive -Path ./publish_output/* -DestinationPath ./${{ matrix.artifact_name }}
 
-      # Packaged for Linux and macOS.
       - name: Tar output (Unix)
         if: matrix.os != 'windows-latest'
         run: tar -czvf ./${{ matrix.artifact_name }} -C ./publish_output .
 
-      # Create the Release and upload the files.
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
