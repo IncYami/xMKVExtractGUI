@@ -1,0 +1,431 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xMKVExtractGUI.ViewModels"
+        xmlns:models="using:xMKVExtractGUI.Models"
+        x:Class="xMKVExtractGUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="xMKVExtractGUI"
+        Width="1000" Height="720"
+        MinWidth="820" MinHeight="580"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/icon.png"
+        Background="{DynamicResource SystemRegionColor}">
+
+  <!-- Root: DockPanel stacks Status bar at bottom, content fills rest -->
+  <DockPanel LastChildFill="True">
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         STATUS BAR — 2 rows: Track progress | Settings/About
+                               Total progress | Abort/AbortAll
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <Border DockPanel.Dock="Bottom" Classes="StatusBar">
+      <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto"
+            HorizontalAlignment="Stretch">
+
+        <!-- Row 0 — Track progress -->
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="Track:" VerticalAlignment="Center"
+                   Margin="0,0,6,0" FontSize="13" Width="44"/>
+        <ProgressBar Grid.Row="0" Grid.Column="1"
+                     Value="{Binding CurrentProgress}" Minimum="0" Maximum="100"
+                     Height="13" VerticalAlignment="Center" Margin="0,2"/>
+        <TextBlock Grid.Row="0" Grid.Column="2"
+                   Text="{Binding CurrentProgress, StringFormat='{}{0}%'}"
+                   Width="36" FontSize="12" VerticalAlignment="Center"
+                   Margin="4,0"/>
+
+        <!-- Row 0 right — Settings + About -->
+        <Button Grid.Row="0" Grid.Column="3" Command="{Binding OpenSettingsCommand}" Classes="Toolbar" Margin="4,1,2,1" Width="105">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Data="{StaticResource IconSettings}" Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+            <TextBlock Text="Settings" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+
+        <Button Grid.Row="0" Grid.Column="4" Command="{Binding OpenAboutCommand}" Classes="Toolbar" Margin="2,1,0,1" Width="105">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Data="{StaticResource IconAbout}" Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+            <TextBlock Text="About" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+
+        <!-- Dummy cell for alignment -->
+        <Panel Grid.Row="0" Grid.Column="5" Width="4"/>
+
+        <!-- Row 1 — Total progress -->
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Total:" VerticalAlignment="Center"
+                   Margin="0,0,6,0" FontSize="13" Width="44"/>
+        <ProgressBar Grid.Row="1" Grid.Column="1"
+                     Value="{Binding TotalProgress}" Minimum="0" Maximum="100"
+                     Height="13" VerticalAlignment="Center" Margin="0,2"/>
+        <TextBlock Grid.Row="1" Grid.Column="2"
+                   Text="{Binding TotalProgress, StringFormat='{}{0}%'}"
+                   Width="36" FontSize="12" VerticalAlignment="Center"
+                   Margin="4,0"/>
+
+        <!-- Row 1 right — Abort buttons -->
+        <Button Grid.Row="1" Grid.Column="3" Command="{Binding AbortCommand}" Classes="Danger" Margin="4,1,2,1" IsEnabled="{Binding IsExtracting}" Width="105">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Data="{StaticResource IconAbort}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+            <TextBlock Text="Abort" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+
+        <Button Grid.Row="1" Grid.Column="4" Command="{Binding AbortAllCommand}" Classes="Danger" Margin="2,1,0,1" IsEnabled="{Binding IsExtracting}" Width="105">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Data="{StaticResource IconAbortAll}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+            <TextBlock Text="Abort All" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+        
+        <Panel Grid.Row="1" Grid.Column="5" Width="4"/>
+      </Grid>
+    </Border>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         OUTPUT ROW
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <Border DockPanel.Dock="Bottom"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,1,0,0"
+            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            Padding="8,6">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <TextBlock Grid.Column="0" Text="Output:" VerticalAlignment="Center"
+                   FontSize="13" Margin="0,0,6,0" Width="52"/>
+        <TextBox Grid.Column="1"
+                 Text="{Binding OutputDirectory}"
+                 Watermark="Output directory…"
+                 FontSize="13" Margin="0,0,6,0"/>
+        <CheckBox Grid.Column="2"
+                  Content="Use Source"
+                  IsChecked="{Binding UseSourceDirectory}"
+                  FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
+        <Button Grid.Column="3"
+                Content="Browse…"
+                Command="{Binding BrowseOutputDirectoryCommand}"
+                Classes="Toolbar"/>
+      </Grid>
+    </Border>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SELECTED FILE INFORMATION
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <Border DockPanel.Dock="Bottom"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,1,0,0"
+            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            Padding="8,5" MinHeight="56">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top"
+                   Text="Selected File Information"
+                   Classes="SectionHeader"
+                   VerticalAlignment="Top"/>
+      
+        <TextBox Text="{Binding SelectedFileInfo}"
+                 IsReadOnly="True"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 FontSize="{DynamicResource FontSizeSmall}"
+                 FontFamily="Consolas,Cascadia Code,monospace"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+      </DockPanel>
+    </Border>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         MAIN CONTENT — Input Files (left) + Side Panel (right)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <Grid ColumnDefinitions="*,Auto" Margin="6,6,6,4">
+
+      <!-- ── INPUT FILES ─────────────────────────────────────────────────── -->
+      <Border Grid.Column="0"
+              Classes="GroupBox"
+              Margin="0,0,4,0">
+        <DockPanel>
+
+          <!-- Section header -->
+          <TextBlock DockPanel.Dock="Top"
+                     Text="Input Files" Classes="SectionHeader"/>
+
+          <!-- Toolbar: Add / Remove / Remove All | Append / Overwrite -->
+          <Grid DockPanel.Dock="Top"
+                ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto,Auto"
+                Margin="0,0,0,5">
+            
+            <Button Grid.Column="0" Content="＋ Add" Command="{Binding AddInputFileCommand}" Classes="Toolbar" Margin="0,0,3,0"/>
+            <Button Grid.Column="1" Content="✕ Remove" Command="{Binding RemoveSelectedFileCommand}" Classes="Toolbar" Margin="0,0,3,0"/>
+            <Button Grid.Column="2" Content="✕✕ Remove All" Command="{Binding RemoveAllFilesCommand}" Classes="Toolbar" Margin="0,0,3,0"/>
+            
+            <Panel Grid.Column="3" Width="16"/>
+
+            <Button Grid.Column="4" 
+                    Content="{Binding ExpandToggleText}" 
+                    Command="{Binding ToggleExpandCollapseCommand}" 
+                    Classes="Toolbar" 
+                    Margin="0,0,3,0" 
+                    Width="110" 
+                    HorizontalContentAlignment="Center"/>
+
+            <CheckBox Grid.Column="6" Content="Append D&amp;D" IsChecked="{Binding AppendOnDragDrop}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox Grid.Column="7" Content="Overwrite" IsChecked="{Binding OverwriteExistingFiles}" FontSize="12" VerticalAlignment="Center"/>
+          </Grid>
+
+          <!-- Drop target hint -->
+          <TextBlock DockPanel.Dock="Top"
+                     Text="Drag &amp; drop .mkv files here"
+                     FontSize="11"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                     Margin="0,0,0,4"
+                     IsVisible="{Binding !FileNodes.Count}"/>
+
+          <!-- Track tree -->
+          <TreeView ItemsSource="{Binding FileNodes}"
+                    SelectedItem="{Binding SelectedFileNode, Mode=TwoWay}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Margin="0,4">
+            
+            <TreeView.Styles>
+              <Style Selector="TreeViewItem">
+                <Setter Property="MinHeight" Value="20"/>
+              </Style>
+              
+              <Style Selector="TreeViewItem" x:DataType="models:MkvFileNode">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+              </Style>
+
+              <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot">
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="MinHeight" Value="20"/>
+              </Style>
+
+              <Style Selector="TreeViewItem TreeViewItem /template/ Border#PART_LayoutRoot">
+                <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+                <Setter Property="BorderThickness" Value="1,0,0,0"/>
+                <Setter Property="Margin" Value="12,0,0,0"/> 
+                <Setter Property="Padding" Value="4,0,0,0"/> 
+              </Style>
+
+              <Style Selector="TreeViewItem /template/ ToggleButton#PART_ExpandCollapseChevron">
+                <Setter Property="Width" Value="14"/>
+                <Setter Property="Height" Value="14"/>
+                <Setter Property="Margin" Value="2,0,2,0"/>
+              </Style>
+            </TreeView.Styles>
+
+            <TreeView.DataTemplates>
+              <TreeDataTemplate DataType="models:MkvFileNode" ItemsSource="{Binding Tracks}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <CheckBox IsChecked="{Binding IsChecked}" IsThreeState="True" VerticalAlignment="Center" Margin="0">
+                     <CheckBox.Styles>
+                       <Style Selector="CheckBox">
+                         <Setter Property="MinHeight" Value="16"/>
+                       </Style>
+                     </CheckBox.Styles>
+                  </CheckBox>
+                  
+                  <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+              </TreeDataTemplate>
+
+              <DataTemplate DataType="models:TrackNode">
+                <StackPanel Orientation="Horizontal" Spacing="4" Margin="0">
+                  <CheckBox IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0">
+                     <CheckBox.Styles>
+                       <Style Selector="CheckBox">
+                         <Setter Property="MinHeight" Value="16"/>
+                       </Style>
+                     </CheckBox.Styles>
+                  </CheckBox>
+                  
+                  <Path Data="{Binding TypeIcon, Converter={x:Static models:IconConverter.Instance}}" 
+                        Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                        StrokeThickness="1.5"
+                        StrokeLineCap="Round"
+                        StrokeJoin="Round"
+                        Fill="Transparent"
+                        Width="12" Height="12"
+                        Stretch="Uniform"
+                        VerticalAlignment="Center"/>
+                  
+                  <TextBlock Text="{Binding DisplayText}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+              </DataTemplate>
+            </TreeView.DataTemplates>
+          </TreeView>
+
+        </DockPanel>
+      </Border>
+
+      <!-- ── SIDE PANEL ──────────────────────────────────────────────────── -->
+      <ScrollViewer Grid.Column="1" Width="200" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="4">
+
+        <!-- ── Check / Selection section ──────────────────────────────────── -->
+        <Border Classes="GroupBox">
+          <StackPanel Spacing="0">
+            <TextBlock Text="Select Tracks" Classes="SectionHeader"/>
+
+            <CheckBox Content="All Tracks"
+                      IsChecked="{Binding AllTracksChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector"
+                      FontWeight="SemiBold"
+                      Foreground="{DynamicResource SystemAccentColor}"/>
+
+            <Separator Classes="HDivider"/>
+
+            <CheckBox IsChecked="{Binding AllVideoChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="{StaticResource IconVideo}"
+                      Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                      StrokeThickness="1.5"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      Fill="Transparent"
+                      Width="14" Height="14"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center"/>
+                <TextBlock Text="Video" VerticalAlignment="Center"/>
+              </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllAudioChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="{StaticResource IconAudio}"
+                      Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                      StrokeThickness="1.5"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      Fill="Transparent"
+                      Width="14" Height="14"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center"/>
+                <TextBlock Text="Audio" VerticalAlignment="Center"/>
+              </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllSubtitlesChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="{StaticResource IconSubtitle}"
+                      Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                      StrokeThickness="1.5"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      Fill="Transparent"
+                      Width="14" Height="14"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center"/>
+                <TextBlock Text="Subtitles" VerticalAlignment="Center"/>
+              </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllChaptersChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="{StaticResource IconChapters}"
+                      Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                      StrokeThickness="1.5"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      Fill="Transparent"
+                      Width="14" Height="14"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center"/>
+                <TextBlock Text="Chapters" VerticalAlignment="Center"/>
+              </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllAttachmentsChecked}"
+                      IsThreeState="True"
+                      Classes="TypeSelector">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="{StaticResource IconAttachment}"
+                      Stroke="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                      StrokeThickness="1.5"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      Fill="Transparent"
+                      Width="14" Height="14"
+                      Stretch="Uniform"
+                      VerticalAlignment="Center"/>
+                <TextBlock Text="Attachments" VerticalAlignment="Center"/>
+              </StackPanel>
+            </CheckBox>
+          </StackPanel>
+        </Border>
+
+        <!-- ── Actions section ────────────────────────────────────────────── -->
+        <Border Classes="GroupBox">
+          <StackPanel Spacing="7">
+            <TextBlock Text="Actions" Classes="SectionHeader"/>
+
+            <!-- Logs / Jobs / Popup row -->
+            <WrapPanel Orientation="Horizontal">
+              <Button Content="📋 Logs" Command="{Binding OpenLogsCommand}"
+                      Classes="Toolbar" Margin="0,0,4,4"/>
+              <Button Content="🗂 Jobs" Command="{Binding OpenJobManagerCommand}"
+                      Classes="Toolbar" Margin="0,0,4,4"/>
+              <CheckBox Content="Popup"
+                        IsChecked="{Binding PopupNotifications}"
+                        VerticalAlignment="Center" FontSize="12"/>
+            </WrapPanel>
+
+            <Separator Classes="HDivider"/>
+
+            <!-- Chapter Type -->
+            <StackPanel Spacing="3">
+              <TextBlock Text="Chapter Type" FontSize="11"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+              <ComboBox ItemsSource="{Binding ChapterTypes}"
+                        SelectedItem="{Binding SelectedChapterType}"
+                        FontSize="13" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <!-- Extraction Mode -->
+            <StackPanel Spacing="3">
+              <TextBlock Text="Extraction Mode" FontSize="11"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+              <ComboBox ItemsSource="{Binding ExtractionModes}"
+                        SelectedItem="{Binding SelectedExtractionMode}"
+                        FontSize="13" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <Separator Classes="HDivider"/>
+
+            <!-- Add Jobs / Extract -->
+            <Button Content="➕ Add Jobs" Command="{Binding AddJobsCommand}"
+                    Classes="Toolbar" HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center" Margin="0,0,0,4"/>
+            <Button Content="▶ Extract" Command="{Binding ExtractCommand}"
+                    Classes="Primary" HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    IsEnabled="{Binding !IsExtracting}"/>
+
+            <!-- Status message -->
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="11" TextWrapping="Wrap"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       Margin="0,4,0,0"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Spacer -->
+        </StackPanel>
+      </ScrollViewer>
+
+    </Grid>
+    <!-- end main content -->
+
+  </DockPanel>
+</Window>

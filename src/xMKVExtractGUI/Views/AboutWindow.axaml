@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xMKVExtractGUI.ViewModels"
+        x:Class="xMKVExtractGUI.Views.AboutWindow"
+        x:DataType="vm:AboutViewModel"
+        Title="About xMKVExtractGUI"
+        Width="420" Height="300"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SystemRegionColor}">
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,16">
+
+    <!-- Header: icon + name + version -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="14" Margin="0,0,0,16">
+      <Image Source="/Assets/icon.png" Width="48" Height="48"
+             VerticalAlignment="Center"
+             RenderOptions.BitmapInterpolationMode="HighQuality"/>
+      <StackPanel VerticalAlignment="Center" Spacing="2">
+        <TextBlock FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
+          <Run Text="{Binding AppName}"/>
+          <Run Text=" "/>
+          <Run Text="{Binding Version}"
+               Foreground="{DynamicResource SystemAccentColor}"/>
+        </TextBlock>
+        <TextBlock Text="{Binding Author}"
+                   FontSize="12"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Description + links -->
+    <StackPanel Grid.Row="1" Spacing="10">
+      <TextBlock Text="{Binding Description}"
+                 FontSize="13" TextWrapping="Wrap"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+
+      <Separator Height="1"
+                 Background="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                 Margin="0,4"/>
+
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Grid.Column="0" Text="GitHub:" FontSize="12"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   Margin="0,0,8,0" VerticalAlignment="Center"/>
+        <Button Grid.Column="1"
+                x:Name="GitHubBtn"
+                Content="{Binding GitHubUrl}"
+                Classes="Toolbar"
+                FontSize="11"
+                HorizontalAlignment="Left"
+                HorizontalContentAlignment="Left"
+                Foreground="{DynamicResource SystemAccentColor}"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="0"/>
+      </Grid>
+    </StackPanel>
+
+    <!-- Close button -->
+    <Button Grid.Row="2"
+            Content="Close"
+            x:Name="CloseBtn"
+            Classes="Toolbar"
+            HorizontalAlignment="Right"
+            MinWidth="90"/>
+  </Grid>
+
+</Window>

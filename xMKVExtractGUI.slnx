@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/xMKVExtractGUI/xMKVExtractGUI.csproj" />
+    <Project Path="src/xMKVToolNix/xMKVToolNix.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/xMKVToolNix.UnitTests/xMKVToolNix.UnitTests.csproj" />
+  </Folder>
+</Solution>

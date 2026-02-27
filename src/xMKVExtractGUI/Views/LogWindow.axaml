@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xMKVExtractGUI.ViewModels"
+        x:Class="xMKVExtractGUI.Views.LogWindow"
+        x:DataType="vm:LogWindowViewModel"
+        Title="Log"
+        Width="760" Height="520"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SystemRegionColor}">
+
+  <DockPanel Margin="8">
+
+    <!-- Toolbar -->
+    <StackPanel DockPanel.Dock="Top"
+                Orientation="Horizontal" Spacing="4"
+                Margin="0,0,0,6">
+      <Button Content="📋 Copy Selection"
+              x:Name="CopySelectionBtn"
+              Classes="Toolbar"/>
+      <Button Content="🔃 Refresh"
+              x:Name="RefreshBtn"
+              Classes="Toolbar"/>
+      <Button Content="🗑 Clear Log"
+              Command="{Binding ClearLogCommand}"
+              Classes="Toolbar"/>
+      <Button Content="💾 Save…"
+              Command="{Binding SaveLogCommand}"
+              Classes="Toolbar"/>
+      <Button Content="✕ Close"
+              x:Name="CloseBtn"
+              Classes="Toolbar"/>
+    </StackPanel>
+
+    <!-- Status -->
+    <TextBlock DockPanel.Dock="Bottom"
+               Text="{Binding StatusMessage}"
+               FontSize="11" Margin="0,4,0,0"
+               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+    <!-- Log text area -->
+    <TextBox x:Name="LogTextBox"
+             Text="{Binding LogText}"
+             IsReadOnly="True"
+             TextWrapping="NoWrap"
+             AcceptsReturn="True"
+             Classes="Mono"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+             Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+             BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+
+  </DockPanel>
+</Window>

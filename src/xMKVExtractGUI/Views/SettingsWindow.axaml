@@ -1,0 +1,130 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xMKVExtractGUI.ViewModels"
+        x:Class="xMKVExtractGUI.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Settings"
+        Width="660" Height="640"
+        MinWidth="560"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="{DynamicResource SystemRegionColor}">
+
+  <DockPanel Margin="12">
+
+    <!-- Status bar (bottom) -->
+    <TextBlock DockPanel.Dock="Bottom"
+               Text="{Binding StatusMessage}"
+               FontSize="11" Margin="0,4,0,0"
+               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+    <!-- OK / Cancel / Reset (bottom) -->
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal" HorizontalAlignment="Right"
+                Spacing="8" Margin="0,8,0,0">
+      <Button Content="Reset All Defaults" Command="{Binding ResetDefaultsCommand}"
+              MinWidth="130" Classes="Toolbar"/>
+      <Button Content="OK"     x:Name="OkButton"     Classes="Primary" MinWidth="80"/>
+      <Button Content="Cancel" x:Name="CancelButton" MinWidth="80" Classes="Toolbar"/>
+    </StackPanel>
+
+    <!-- Scrollable content -->
+    <ScrollViewer>
+      <StackPanel Spacing="8">
+
+        <!-- ── MKVToolNix Directory ────────────────────────────────────── -->
+        <Border Classes="GroupBox">
+          <StackPanel Spacing="8">
+            <TextBlock Text="MKVToolNix Directory" Classes="SectionHeader"/>
+            <Grid ColumnDefinitions="*,Auto,Auto">
+              <TextBox Grid.Column="0"
+                       Text="{Binding MkvToolNixPath}"
+                       Watermark="/usr/bin  or  C:\Program Files\MKVToolNix"
+                       FontSize="13" Margin="0,0,6,0"/>
+              <Button Grid.Column="1"
+                      Content="Browse…"
+                      Command="{Binding BrowseMkvToolNixPathCommand}"
+                      Classes="Toolbar" Margin="0,0,4,0"/>
+              <Button Grid.Column="2"
+                      Content="Auto Detect"
+                      Command="{Binding AutoDetectCommand}"
+                      Classes="Toolbar"/>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- ── Available Placeholders ─────────────────────────────────── -->
+        <Border Classes="GroupBoxFlat">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Available Placeholders" Classes="SectionHeader"/>
+            <TextBox Text="{Binding PlaceholdersInfo}"
+                     IsReadOnly="True"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     Classes="Mono"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"/>
+          </StackPanel>
+        </Border>
+
+        <!-- ── Filename Patterns ──────────────────────────────────────── -->
+        <Border Classes="GroupBox">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Filename Patterns" Classes="SectionHeader"/>
+            <Grid ColumnDefinitions="130,*"
+                  RowDefinitions="Auto,8,Auto,8,Auto,8,Auto,8,Auto,8,Auto">
+
+              <TextBlock Grid.Row="0" Grid.Column="0" Text="Video Tracks:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="0" Grid.Column="1"
+                         Text="{Binding VideoTrackPattern}" FontSize="13"/>
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Text="Audio Tracks:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="2" Grid.Column="1"
+                         Text="{Binding AudioTrackPattern}" FontSize="13"/>
+
+              <TextBlock Grid.Row="4" Grid.Column="0" Text="Subtitle Tracks:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="4" Grid.Column="1"
+                         Text="{Binding SubtitleTrackPattern}" FontSize="13"/>
+
+              <TextBlock Grid.Row="6" Grid.Column="0" Text="Chapters:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="6" Grid.Column="1"
+                         Text="{Binding ChapterPattern}" FontSize="13"/>
+
+              <TextBlock Grid.Row="8" Grid.Column="0" Text="Attachments:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="8" Grid.Column="1"
+                         Text="{Binding AttachmentPattern}" FontSize="13"/>
+
+              <TextBlock Grid.Row="10" Grid.Column="0" Text="Tags:"
+                         VerticalAlignment="Center" FontSize="13"/>
+              <TextBox   Grid.Row="10" Grid.Column="1"
+                         Text="{Binding TagsPattern}" FontSize="13"/>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- ── Advanced Options ───────────────────────────────────────── -->
+        <Border Classes="GroupBox">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Advanced Options" Classes="SectionHeader"/>
+            <CheckBox Content="Disable BOM for text files  (requires mkvextract v96.0+)"
+                      IsChecked="{Binding DisableBom}"
+                      FontSize="13"/>
+            <CheckBox Content="Use 'raw' extraction  (--raw flag, tracks mode only)"
+                      IsChecked="{Binding UseRawExtraction}"
+                      FontSize="13"/>
+            <CheckBox Content="Use 'full raw' extraction  (--fullraw, takes precedence over raw)"
+                      IsChecked="{Binding UseFullRawExtraction}"
+                      FontSize="13"/>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </DockPanel>
+</Window>

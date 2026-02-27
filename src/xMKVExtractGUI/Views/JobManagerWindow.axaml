@@ -1,0 +1,136 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xMKVExtractGUI.ViewModels"
+        xmlns:models="using:xMKVExtractGUI.Models"
+        x:Class="xMKVExtractGUI.Views.JobManagerWindow"
+        x:DataType="vm:JobManagerViewModel"
+        Title="Job Manager"
+        Width="860" Height="560"
+        MinWidth="640" MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SystemRegionColor}">
+
+  <DockPanel Margin="8">
+
+    <!-- ── Toolbar ──────────────────────────────────────────────────── -->
+    <StackPanel DockPanel.Dock="Top"
+                Orientation="Horizontal" Spacing="4"
+                Margin="0,0,0,6">
+      <Button Content="▶ Run Jobs"
+              Command="{Binding RunJobsCommand}"
+              Classes="Primary"
+              IsEnabled="{Binding !IsRunning}"/>
+      <Button Content="✕ Remove"
+              Command="{Binding RemoveSelectedCommand}"
+              Classes="Toolbar"/>
+      <Button Content="☑ All"
+              Command="{Binding SelectAllCommand}"
+              Classes="Toolbar"/>
+      <Button Content="☐ None"
+              Command="{Binding DeselectAllCommand}"
+              Classes="Toolbar"/>
+      <Button Content="↺ Reset"
+              Command="{Binding ResetSelectedCommand}"
+              Classes="Toolbar"/>
+      <Separator Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                 Margin="4,0"/>
+      <Button Content="💾 Save Jobs…"
+              Command="{Binding SaveJobsCommand}"
+              Classes="Toolbar"/>
+      <Button Content="📂 Load Jobs…"
+              Command="{Binding LoadJobsCommand}"
+              Classes="Toolbar"/>
+      <Separator Width="1" Background="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                 Margin="4,0"/>
+        <Button Command="{Binding AbortCommand}" Classes="Danger" IsEnabled="{Binding IsRunning}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+        <Path Data="{StaticResource IconAbort}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+        <TextBlock Text="Abort" VerticalAlignment="Center"/>
+        </StackPanel>
+        </Button>
+
+        <Button Command="{Binding AbortAllCommand}" Classes="Danger" IsEnabled="{Binding IsRunning}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+        <Path Data="{StaticResource IconAbortAll}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+        <TextBlock Text="Abort All" VerticalAlignment="Center"/>
+        </StackPanel>
+        </Button>
+      <CheckBox Content="Popup"
+                IsChecked="{Binding PopupNotifications}"
+                VerticalAlignment="Center"
+                Margin="8,0,0,0" FontSize="12"/>
+    </StackPanel>
+
+    <!-- ── Progress section ─────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Bottom" Classes="GroupBox" Margin="0,6,0,0">
+      <Grid RowDefinitions="Auto,Auto,Auto"
+            ColumnDefinitions="100,*,42">
+
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="Current Track:" VerticalAlignment="Center"
+                   FontSize="12"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                   Text="{Binding CurrentTrackName}"
+                   FontSize="12" TextTrimming="CharacterEllipsis"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Current:"
+                   VerticalAlignment="Center" FontSize="12" Margin="0,4,0,0"/>
+        <ProgressBar Grid.Row="1" Grid.Column="1"
+                     Value="{Binding CurrentProgress}"
+                     Minimum="0" Maximum="100"
+                     Height="12" Margin="0,4,6,0"/>
+        <TextBlock Grid.Row="1" Grid.Column="2"
+                   Text="{Binding CurrentProgress, StringFormat='{}{0}%'}"
+                   FontSize="11" Margin="0,4,0,0" VerticalAlignment="Center"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="Total:"
+                   VerticalAlignment="Center" FontSize="12" Margin="0,4,0,0"/>
+        <ProgressBar Grid.Row="2" Grid.Column="1"
+                     Value="{Binding TotalProgress}"
+                     Minimum="0" Maximum="100"
+                     Height="12" Margin="0,4,6,0"/>
+        <TextBlock Grid.Row="2" Grid.Column="2"
+                   Text="{Binding TotalProgress, StringFormat='{}{0}%'}"
+                   FontSize="11" Margin="0,4,0,0" VerticalAlignment="Center"/>
+      </Grid>
+    </Border>
+
+    <!-- ── Status ───────────────────────────────────────────────────── -->
+    <TextBlock DockPanel.Dock="Bottom"
+               Text="{Binding StatusMessage}"
+               FontSize="11" Margin="0,3,0,0"
+               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+    <!-- ── Jobs DataGrid ─────────────────────────────────────────────── -->
+    <DataGrid ItemsSource="{Binding Jobs}"
+              CanUserSortColumns="True"
+              CanUserReorderColumns="True"
+              GridLinesVisibility="Horizontal"
+              FontSize="12"
+              Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+      <DataGrid.Columns>
+        <DataGridCheckBoxColumn Header="✓"
+                                Binding="{Binding IsSelected}"
+                                Width="36"/>
+        <DataGridTextColumn Header="Status"
+                            Binding="{Binding Status}"
+                            Width="80"/>
+        <DataGridTextColumn Header="Source File"
+                            Binding="{Binding SourceFile}"
+                            Width="*"/>
+        <DataGridTextColumn Header="Output Directory"
+                            Binding="{Binding OutputDirectory}"
+                            Width="170"/>
+        <DataGridTextColumn Header="Tracks"
+                            Binding="{Binding Tracks}"
+                            Width="160"/>
+        <DataGridTextColumn Header="Progress"
+                            Binding="{Binding Progress, StringFormat='{}{0}%'}"
+                            Width="72"/>
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </DockPanel>
+</Window>
