@@ -2,7 +2,7 @@
 
 A modern, cross-platform Avalonia UI front-end for `mkvextract` (part of [MKVToolNix](https://mkvtoolnix.download/)).
 
-**xMKVExtractGUI** is a modern alternative and spiritual successor to the classic gMKVExtractGUI. It leverages the complete, battle-tested backend of the original gMKVExtractGUI, entirely rewritten and ported from .NET Framework 4 to the cutting-edge **.NET 10**. Paired with a brand-new interface built on **Avalonia UI**, it brings a native, high-performance, and dark-themed experience (inspired by OBS) to modern operating systems.
+**xMKVExtractGUI** is a modern alternative to the classic [gMKVExtractGUI](github.com/Gpower2/gMKVExtractGUI). It leverages the complete, battle-tested backend of the original gMKVExtractGUI, entirely rewritten and ported from .NET Framework 4 to the cutting-edge **.NET 10**. Paired with a brand-new interface built on **Avalonia UI**.
 
 ## ✨ Features
 
@@ -26,7 +26,7 @@ To contribute or test the application on your own machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/priestess/xMKVExtractGUI.git](https://github.com/priestess/xMKVExtractGUI.git)
+   git clone https://github.com/IncYami/xMKVExtractGUI.git
    cd xMKVExtractGUI
    ```
    

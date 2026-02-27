@@ -3,8 +3,8 @@
 [Oo]ut/
 .direnv
 .envrc
-.deps.nix
-.flake.lock
+deps.nix
+flake.lock
 flake.nix
 GUI.md
 result
