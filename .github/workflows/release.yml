@@ -68,9 +68,13 @@ jobs:
           
           cp src/xMKVExtractGUI/Assets/icon.png AppDir/icon.png
           
-          cd AppDir
-          ln -s usr/bin/xMKVExtractGUI AppRun
-          cd ..
+          cat <<'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+          exec "${HERE}/usr/bin/xMKVExtractGUI" "$@"
+          EOF
+          chmod +x AppDir/AppRun
           
           ./appimagetool --appimage-extract-and-run AppDir ./release_artifacts/xMKVExtractGUI.AppImage
 
