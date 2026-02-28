@@ -9,3 +9,4 @@ flake.nix
 GUI.md
 result
 shell.nix
+src/xMKVExtractTUI

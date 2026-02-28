@@ -8,7 +8,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>xMKVExtractGUI</AssemblyName>
     <RootNamespace>xMKVExtractGUI</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Sekkon</Authors>
     <Description>A modern Avalonia UI front-end for mkvextract (MKVToolNix). Extracts tracks, chapters, attachments and tags from Matroska files.</Description>
     <PackageProjectUrl>https://github.com/IncYami/xMKVExtractGUI</PackageProjectUrl>
@@ -22,7 +22,7 @@
 
   <!-- ── Avalonia + UI ────────────────────────────────────────────── -->
   <ItemGroup>
-    <PackageReference Include="Avalonia"                       Version="11.3.12"/>
+    <PackageReference Include="Avalonia"                      Version="11.3.12"/>
     <PackageReference Include="Avalonia.Desktop"              Version="11.3.12"/>
     <PackageReference Include="Avalonia.Themes.Fluent"        Version="11.3.12"/>
     <PackageReference Include="Avalonia.Controls.DataGrid"    Version="11.3.12"/>

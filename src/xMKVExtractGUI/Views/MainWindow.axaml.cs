@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        if (version != null)
+        {
+            Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
+        }
 
         WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this, msg => OpenSettings(msg.Settings));
         WeakReferenceMessenger.Default.Register<OpenAboutMessage>(this, _ => OpenAbout());

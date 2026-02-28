@@ -26,10 +26,15 @@ public class AppSettings
 
 public static class SettingsService
 {
+    // store settings in the same directory as the executable
     private static readonly string SettingsPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "xMKVExtractGUI",
-        "settings.json");
+    AppContext.BaseDirectory,
+    "settings.json");
+
+//    private static readonly string SettingsPath = Path.Combine(
+//        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+//        "xMKVExtractGUI",
+//        "settings.json");
 
     public static AppSettings Load()
     {
