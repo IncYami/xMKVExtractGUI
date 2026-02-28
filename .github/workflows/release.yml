@@ -20,7 +20,7 @@ jobs:
             artifact_name: xMKVExtractGUI-win-x64.zip
           - os: ubuntu-latest
             rid: linux-x64
-            artifact_name: xMKVExtractGUI-linux-x64.AppImage
+            artifact_name: xMKVExtractGUI-linux-x64.tar.gz
           - os: macos-latest
             rid: osx-x64
             artifact_name: xMKVExtractGUI-macos-x64.tar.gz
@@ -37,13 +37,16 @@ jobs:
       - name: Publish App
         run: dotnet publish src/xMKVExtractGUI/xMKVExtractGUI.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o ./publish_output
 
+      - name: Prepare Release Directory
+        run: mkdir release_artifacts
+
       - name: Zip output (Windows)
         if: matrix.os == 'windows-latest'
-        run: Compress-Archive -Path ./publish_output/* -DestinationPath ./${{ matrix.artifact_name }}
+        run: Compress-Archive -Path ./publish_output/* -DestinationPath ./release_artifacts/${{ matrix.artifact_name }}
 
-      - name: Tar output (macOS)
-        if: matrix.os == 'macos-latest'
-        run: tar -czvf ./${{ matrix.artifact_name }} -C ./publish_output .
+      - name: Tar output (Unix)
+        if: matrix.os != 'windows-latest'
+        run: tar -czvf ./release_artifacts/${{ matrix.artifact_name }} -C ./publish_output .
 
       - name: Build AppImage (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -69,10 +72,10 @@ jobs:
           ln -s usr/bin/xMKVExtractGUI AppRun
           cd ..
           
-          ./appimagetool --appimage-extract-and-run AppDir ./${{ matrix.artifact_name }}
+          ./appimagetool --appimage-extract-and-run AppDir ./release_artifacts/xMKVExtractGUI.AppImage
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./${{ matrix.artifact_name }}
+          files: ./release_artifacts/*
           generate_release_notes: true

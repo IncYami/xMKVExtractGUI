@@ -22,33 +22,34 @@
 
   <!-- ── Avalonia + UI ────────────────────────────────────────────── -->
   <ItemGroup>
-    <PackageReference Include="Avalonia"                      Version="11.3.12"/>
-    <PackageReference Include="Avalonia.Desktop"              Version="11.3.12"/>
-    <PackageReference Include="Avalonia.Themes.Fluent"        Version="11.3.12"/>
-    <PackageReference Include="Avalonia.Controls.DataGrid"    Version="11.3.12"/>
-    <PackageReference Include="Avalonia.Fonts.Inter"          Version="11.3.12"/>
+    <PackageReference Include="Avalonia" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
     <!-- Wayland support (Linux) -->
-    <PackageReference Include="Avalonia.LinuxFramebuffer"     Version="11.3.12" Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm64'"/>
+    <PackageReference Include="Avalonia.LinuxFramebuffer" Version="11.3.12" Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm64'" />
+    <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3" />
   </ItemGroup>
 
   <!-- ── MVVM toolkit ─────────────────────────────────────────────── -->
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
 
   <!-- ── Backend (gMKVToolNix project reference) ─────────────────── -->
   <ItemGroup>
-    <ProjectReference Include="..\gMKVToolNix\gMKVToolNix.csproj"/>
+    <ProjectReference Include="..\gMKVToolNix\gMKVToolNix.csproj" />
   </ItemGroup>
 
   <!-- ── Dev tools (excluded from release) ───────────────────────── -->
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12"/>
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12" />
   </ItemGroup>
 
   <!-- ── Assets ───────────────────────────────────────────────────── -->
   <ItemGroup>
-    <AvaloniaResource Include="Assets\**"/>
+    <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
 </Project>
